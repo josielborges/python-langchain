@@ -13,7 +13,7 @@ class LLMUtils() :
         self.__temperature = temperature
         self.__model = model
         
-    def get_llm(self) -> ChatOpenAI:
+    def get_openai_llm(self) -> ChatOpenAI:
         llm = ChatOpenAI(
             temperature = self.__temperature,
             model = self.__model,
