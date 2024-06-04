@@ -10,7 +10,7 @@ from utils import LLMUtils
 
 set_debug(True)
 
-llm = LLMUtils().get_openai_llm
+llm = LLMUtils().get_openai_llm()
 
 messages = [
         "Quero visitar um lugar no Brasil famoso por suas praias e cultura. Pode me recomendar?",
