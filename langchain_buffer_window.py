@@ -23,7 +23,7 @@ messages = [
 
 long_chat = ""
 
-memory = ConversationBufferWindowMemory()
+memory = ConversationBufferWindowMemory(k=2)
 
 conversation = ConversationChain(llm=llm, verbose=True, memory=memory)
 
@@ -31,4 +31,4 @@ for message in messages:
     response = conversation.predict(input=message)
     print(response)
 
-print(memory.load_memory_variables)
+print(memory.load_memory_variables({}))
