@@ -1,6 +1,5 @@
 from langchain.prompts import PromptTemplate
 from langchain.prompts.few_shot import FewShotPromptTemplate
-from langchain.globals import set_debug # For debugging
 from utils import LLMUtils
 
 llm = LLMUtils().get_openai_llm()
