@@ -27,7 +27,7 @@ for message in messages:
 
     template = PromptTemplate(template=long_chat, input_variables=[""])
     chain = template | llm | StrOutputParser()
-    respnonse = chain.invoke(input={})
+    response = chain.invoke(input={})
 
-    long_chat += respnonse + '\n'
+    long_chat += response + '\n'
     print(long_chat)
