@@ -1,5 +1,6 @@
 from langchain.prompts import PromptTemplate
 from langchain.prompts.few_shot import FewShotPromptTemplate
+
 from utils import LLMUtils
 
 llm = LLMUtils().get_openai_llm()
