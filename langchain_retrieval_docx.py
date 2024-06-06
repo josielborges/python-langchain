@@ -1,27 +1,24 @@
+import os
+
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import Docx2txtLoader, PyPDFLoader
 from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
-from langchain.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import Field, BaseModel
 from langchain_core.output_parsers import JsonOutputParser
-
-
-import os
+from langchain_core.pydantic_v1 import Field, BaseModel
+from langchain_text_splitters import CharacterTextSplitter
 
 from utils import LLMUtils
 
 # set_debug(True)
 
-llm_model = 'openai'
 is_update_embeddings = False
 faiss_file_path = "db/nps/faiss-index"
 
-llm_factory = LLMUtils(model=llm_model)
-
+llm_factory = LLMUtils('openai')
 llm = llm_factory.getLLM();
 embeddings = llm_factory.getEmbeddings();
+
 
 def update_embeddings():
     loaders = []
@@ -30,9 +27,9 @@ def update_embeddings():
         if np_file.startswith('.~'):
             continue
         if np_file.endswith('.docx'):
-            loaders.append(Docx2txtLoader("nps/"+np_file))
+            loaders.append(Docx2txtLoader("nps/" + np_file))
         if np_file.endswith('.pdf'):
-            loaders.append(PyPDFLoader("nps/"+np_file))
+            loaders.append(PyPDFLoader("nps/" + np_file))
 
     documents = []
 
@@ -49,12 +46,13 @@ def update_embeddings():
 def load_embeddings():
     return FAISS.load_local(faiss_file_path, embeddings, allow_dangerous_deserialization=True)
 
+
 class OutputNps(BaseModel):
-    np = Field("np no formato NP-XXX-XXXX")
+    np = Field("np no formato NP-XXX")
     text = Field("texto de resposta")
 
-output_parser = JsonOutputParser(pydantic_object=OutputNps)
 
+output_parser = JsonOutputParser(pydantic_object=OutputNps)
 
 if is_update_embeddings or not os.path.exists(faiss_file_path):
     print('Updating embeddings')

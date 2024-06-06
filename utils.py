@@ -8,20 +8,16 @@ from langchain_openai import ChatOpenAI
 class LLMUtils:
     __llm = None
     __embeddings = None
-
-    __temperature = 0.0
+    __temperature = None
     __api_key = os.getenv('OPENAI_API_KEY')
 
-    def __init__(self, temperature=1.0, model = 'openai'):
+    def __init__(self, model='openai', temperature=1.0):
         load_dotenv()
         self.__temperature = temperature
         self.__llm = self.get_llm(model)
         self.__embeddings = self.get_embeddings(model)
 
     def get_openai_llm(self) -> ChatOpenAI:
-
-        print(self.__temperature)
-
         llm = ChatOpenAI(
             temperature=self.__temperature,
             model='gpt-3.5-turbo',
@@ -43,7 +39,7 @@ class LLMUtils:
             return self.get_ollama_llm()
         else:
             raise Exception('Invalid model')
-        
+
     def get_embeddings(self, model):
         if model == 'openai':
             from langchain_openai import OpenAIEmbeddings
@@ -56,6 +52,6 @@ class LLMUtils:
 
     def getLLM(self):
         return self.__llm
-    
+
     def getEmbeddings(self):
         return self.__embeddings
