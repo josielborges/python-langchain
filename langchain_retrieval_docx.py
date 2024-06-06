@@ -3,17 +3,25 @@ from langchain_community.document_loaders import Docx2txtLoader, PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
+from langchain.prompts import PromptTemplate
+from langchain_core.pydantic_v1 import Field, BaseModel
+from langchain_core.output_parsers import JsonOutputParser
+
+
 import os
 
 from utils import LLMUtils
 
 # set_debug(True)
 
-__update_embeddings = False
-__faiss_file_path = "db/nps/faiss-index"
+llm_model = 'openai'
+is_update_embeddings = False
+faiss_file_path = "db/nps/faiss-index"
 
-llm = LLMUtils().get_openai_llm()
-embeddings = OpenAIEmbeddings()
+llm_factory = LLMUtils(model=llm_model)
+
+llm = llm_factory.getLLM();
+embeddings = llm_factory.getEmbeddings();
 
 def update_embeddings():
     loaders = []
@@ -35,17 +43,33 @@ def update_embeddings():
     texts = splitter.split_documents(documents)
 
     db = FAISS.from_documents(texts, embeddings)
-    db.save_local(__faiss_file_path)
+    db.save_local(faiss_file_path)
 
 
 def load_embeddings():
-    return FAISS.load_local(__faiss_file_path, embeddings, allow_dangerous_deserialization=True)
+    return FAISS.load_local(faiss_file_path, embeddings, allow_dangerous_deserialization=True)
+
+class OutputNps(BaseModel):
+    np = Field("np no formato NP-XXX-XXXX")
+    text = Field("texto de resposta")
+
+output_parser = JsonOutputParser(pydantic_object=OutputNps)
 
 
-if __update_embeddings or not os.path.exists(__faiss_file_path):
+if is_update_embeddings or not os.path.exists(faiss_file_path):
+    print('Updating embeddings')
     update_embeddings()
 
 db = load_embeddings()
+
+prompt = PromptTemplate(template='''
+                        Você é um assistente de inteligência artificial especializado em responder perguntas com base em documentos fornecidos. 
+                        Por favor, seja preciso e claro nas respostas.
+                        Inclua a NP na resposta no formato NP-XXX-XXXX.
+                        Pergunta: {query}.
+                        {output_format}''',
+                        input_variables=["query"],
+                        partial_variables={"output_format": output_parser.get_format_instructions()})
 
 qa_chain = RetrievalQA.from_chain_type(llm, retriever=db.as_retriever())
 
@@ -55,5 +79,5 @@ while True:
     if query == '':
         break
 
-    result = qa_chain({'query': query})
+    result = qa_chain({'query': prompt.format(query=query)})
     print(result['result'])
