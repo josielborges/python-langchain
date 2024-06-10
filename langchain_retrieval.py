@@ -12,7 +12,7 @@ llm = LLMUtils().get_openai_llm()
 
 text_loader = TextLoader("data/GTB_gold_Nov23.txt", encoding='utf-8')
 documents = text_loader.load()
-splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+splitter = CharacterTextSplitter(separator='.', chunk_size=1000, chunk_overlap=200)
 texts = splitter.split_documents(documents)
 
 embeddings = OpenAIEmbeddings()
