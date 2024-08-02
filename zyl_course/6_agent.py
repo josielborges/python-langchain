@@ -36,7 +36,7 @@ def create_retriever_tool_internal():
     embedding = OpenAIEmbeddings()
     vector_store = FAISS.from_documents(split_docs, embedding)
 
-    retriever = vector_store.as_retriever(search_kwargs={"k": 3})  # it will get the 2 most important parts of document
+    retriever = vector_store.as_retriever(search_kwargs={"k": 3})  # it will get the 3 most important parts of document
 
     retriever_tool = create_retriever_tool(
         retriever=retriever,

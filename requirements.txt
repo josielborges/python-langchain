@@ -8,3 +8,4 @@ pypdf
 python-docx
 docx2txt
 beautifulsoup4
+upstash-redis

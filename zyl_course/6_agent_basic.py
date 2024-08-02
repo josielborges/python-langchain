@@ -38,7 +38,7 @@ agent_executor = AgentExecutor(
 )
 
 response = agent_executor.invoke({
-    "input": "Qual o proximo jogo do Vasco da Gama?"
+    "input": "Qual o próximo jogo do Vasco da Gama?"
 })
 
 print(response['output'])
